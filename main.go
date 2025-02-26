@@ -14,9 +14,17 @@ type Event struct {
 		Name string `json:"name"`
 	} `json:"repo"`
 	Payload struct {
+		Action  string `json:"action"`
 		Commits []struct {
 			Message string `json:"message"`
 		} `json:"commits"`
+		PullRequest struct {
+			Url string `json:"url"`
+		} `json:"pull_request"`
+
+		Issue struct {
+			Url string `json:"url"`
+		} `json:"issue"`
 	} `json:"payload"`
 }
 
@@ -39,6 +47,8 @@ func main() {
 		log.Fatal("Something went wrong")
 	}
 
-	fmt.Println(activities)
+	for _, value := range activities {
+		fmt.Printf("* %s %s repo: %s\n", username, value.Payload.Action, value.Repo)
+	}
 
 }
