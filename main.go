@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 type Event struct {
@@ -15,6 +16,7 @@ type Event struct {
 	} `json:"repo"`
 	Payload struct {
 		Action  string `json:"action"`
+		RefType string `json:"ref_type"`
 		Commits []struct {
 			Message string `json:"message"`
 		} `json:"commits"`
@@ -29,9 +31,15 @@ type Event struct {
 }
 
 func main() {
-	fmt.Println("Enter the Username of the target github:")
-	var username string
-	fmt.Scan(&username)
+
+	args := os.Args
+	githubUsername := args[1:]
+
+	if len(githubUsername) == 0 {
+		log.Fatal("Must enter the github username")
+	}
+
+	username := githubUsername[0]
 
 	fmt.Printf("**Searching result for the %s on github**\n", username)
 
@@ -47,8 +55,6 @@ func main() {
 		log.Fatal("Something went wrong")
 	}
 
-	fmt.Println(activities)
-
 	for _, value := range activities {
 
 		switch value.Type {
@@ -61,6 +67,12 @@ func main() {
 
 		case "WatchEvent":
 			fmt.Printf("- %s %s\n", value.Payload.Action, value.Repo.Name)
+
+		case "CreateEvent":
+			fmt.Printf("- Created %s on %s\n", value.Payload.RefType, value.Repo.Name)
+
+		case "PushEvent":
+			fmt.Printf("- %s %d commits to %s\n", value.Payload.Action, len(value.Payload.Commits), value.Repo.Name)
 
 		}
 
