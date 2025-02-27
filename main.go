@@ -47,8 +47,23 @@ func main() {
 		log.Fatal("Something went wrong")
 	}
 
+	fmt.Println(activities)
+
 	for _, value := range activities {
-		fmt.Printf("* %s %s repo: %s\n", username, value.Payload.Action, value.Repo)
+
+		switch value.Type {
+		case "IssuesEvent":
+
+			fmt.Printf("- %s the new Issue in %s\n", value.Payload.Action, value.Repo.Name)
+
+		case "PublicEvent":
+			fmt.Printf("- %s made %s Public 🔓\n", username, value.Repo.Name)
+
+		case "WatchEvent":
+			fmt.Printf("- %s %s\n", value.Payload.Action, value.Repo.Name)
+
+		}
+
 	}
 
 }
